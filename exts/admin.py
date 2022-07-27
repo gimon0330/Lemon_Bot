@@ -1,4 +1,4 @@
-import discord, traceback
+import discord, traceback, io
 from discord.ext import commands 
 from utils import checks
 
@@ -89,7 +89,7 @@ class admin(commands.Cog):
         
     @commands.command(name='공지보내')
     async def _notice_send(self, ctx, *, arg):
-        noticedb = []
+        noticedb = {"621929509456838666":621932639539953664}
         lis =["SUCCEED LIST"]
         faillis = ["FAIL LIST"]
         sendctrlpannel = await ctx.send(embed=get_embed("공지 전송중",""))
@@ -123,11 +123,11 @@ class admin(commands.Cog):
                 if schannel == '':
                     schannel = freechannel
             try: 
-                await schannel.send(embed=get_embed("<a:waiting:712170404869046334> ｜ 레몬봇 공지",arg+"\n\n모든 문의,건의는 [레몬봇 서포트](https://discord.gg/hTZxtbC) 에서 해주세요.\n[레몬봇 초대하기](https://discordapp.com/api/oauth2/authorize?client_id=661477460390707201&permissions=8&scope=bot) "))
-                lis.append('성공 '+sendedserver)
+                await schannel.send(embed=get_embed("📢 | 레몬봇 공지",arg+"\n\n모든 문의,건의는 [레몬봇 서포트](https://discord.gg/hTZxtbC) 에서 해주세요.\n[레몬봇 초대하기](https://discordapp.com/api/oauth2/authorize?client_id=751660576589217893&permissions=8&scope=bot) "))
+                lis.append('성공 ' + sendedserver)
             except: 
-                faillis.append('실패 '+sendedserver)
-            await sendctrlpannel.edit(embed=get_embed("공지 전송중",f"성공 : {len(lis)-1}\n실패 : {len(faillis)-1}"))
+                faillis.append('실패 ' + sendedserver)
+            await sendctrlpannel.edit(embed=get_embed("공지 전송중",f"성공 : {len(lis) - 1}\n실패 : {len(faillis) - 1}"))
         await ctx.send("성공")
         logfile = discord.File(fp=io.StringIO("\n".join(lis)+"\n\n"+"\n".join(faillis)), filename='notilog.log')
         await ctx.send(file=logfile)

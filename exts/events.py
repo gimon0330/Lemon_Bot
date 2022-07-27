@@ -3,7 +3,7 @@ from itertools import cycle
 from discord.ext import commands, tasks
 from utils import permutil, errors
 
-def get_embed(title, no_emoji = "<a:no:1001365885426073690> | ", description = '', color=0xFF0000): 
+def get_embed(title, description = '', color=0xFF0000, no_emoji = "<a:no:1001365885426073690> | "): 
     return discord.Embed(title=no_emoji + title,description=description,color=color)
 
 class events(commands.Cog):
