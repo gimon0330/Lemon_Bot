@@ -47,15 +47,36 @@ class user(commands.Cog):
             if user.guild_permissions.administrator: embed.add_field(name="서버 권한", value="Admin")
             else: embed.add_field(name="서버 권한", value="User")
             if str(user.id) in self.pool.keys():
+                reinlist = [k for k, v in self.pool[str(user.id)]["reinforce"].items() if v >= 30]
                 embed.add_field(
                     name="Lemon System", 
-                    value=f"Permission: {self.pool[str(user.id)]['permission']}\nMoney: {self.pool[str(user.id)]['money']}\n bank: {self.pool[str(user.id)]['bank']}" + ("\n\n**블랙리스트에 등재된 유저입니다!**" if self.pool[str(user.id)]['blacklist'] else "")
+                    value=f">>> **Permission**: {self.pool[str(user.id)]['permission']}\n" +
+                    ("\n**블랙리스트에 등재된 유저입니다!**" if self.pool[str(user.id)]['blacklist'] else 
+                    f"**Money**: {self.pool[str(user.id)]['money']}원\n" + 
+                    f"**bank**: {self.pool[str(user.id)]['bank']}원\n" + 
+                    f"**30레벨 이상 강화 아이템 갯수** : {len(reinlist)}개\n{','.join(reinlist)}")
                 )
         await ctx.send(embed=embed)
         
     @commands.command(name = "돈")
-    async def user_money_check(self, ctx):
-        await ctx.send(str(self.client.pool[str(ctx.author.id)]["money"]) + "원")
+    async def user_money_check(self, ctx, user: typing.Optional[discord.Member] = None):
+        if user: user = user.id
+        else: user = ctx.author.id
+        
+        money = self.pool[str(user)]["money"]
+        
+        if money < 10000 ** 10:
+            suffix=['','만', '억', '조', '경', '해', '자', '양', '구', '간', '정', '재', '극','항하사','아승기','나유타','불가사의','무량대수','','','','','','','','구골','','','','','','','','','','','','','','','','','','','','','','','','']
+            a=10000 ** 12
+            str_result = ''
+            for i in range(0,51):
+                if money >= a:
+                    str_result += f"{int(money // a)}{suffix[-i]} "
+                    money = money % a
+                a=a//10000
+            money = str_result.strip()
+
+        await ctx.send(embed=get_embed(f'💸 | {user} 님의 지갑',f"{money} 원"))
 
     @commands.command(name = "은행")
     async def user_bank_check(self, ctx):
@@ -154,13 +175,10 @@ class user(commands.Cog):
             with open("./config/user.json", "w", encoding='utf-8') as db_json:
                 db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
             
-    @reinforce.command(name = "레벨")
+    @reinforce.command(name = "목록")
     async def level(self, ctx):
-        if str(ctx.author.id) in self.client.pool.keys():
-            lev = self.client.pool[str(ctx.author.id)]["reinforce"]
-            await ctx.send("현재 레벨은 %d" %lev)
-        else:
-            await ctx.send("가입부터 하고 와주세요")
+        reinlist = [f"**Lv{v}** {k}" for k, v in self.pool[str(ctx.author.id)]["reinforce"].items()]
+        await ctx.send(embed=get_embed(f"🛠️ | {ctx.author.name}님의 강화목록입니다. (총 {len(reinlist)}개)", "\n".join(reinlist)))
 
 def setup(client):
     client.add_cog(user(client))
