@@ -47,7 +47,10 @@ class user(commands.Cog):
             if user.guild_permissions.administrator: embed.add_field(name="서버 권한", value="Admin")
             else: embed.add_field(name="서버 권한", value="User")
             if str(user.id) in self.pool.keys():
-                embed.add_field(name="봇 권한", value=self.pool[str(user.id)]["permission"])
+                embed.add_field(
+                    name="Lemon System", 
+                    value=f"Permission: {self.pool[str(user.id)]['permission']}\nMoney: {self.pool[str(user.id)]['money']}\n bank: {self.pool[str(user.id)]['bank']}" + ("\n\n**블랙리스트에 등재된 유저입니다!**" if self.pool[str(user.id)]['blacklist'] else "")
+                )
         await ctx.send(embed=embed)
         
     @commands.command(name = "돈")
