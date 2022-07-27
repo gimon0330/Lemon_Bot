@@ -1,5 +1,5 @@
-import json, discord, random, typing, datetime
-from discord.ext import commands 
+import json, discord, random, typing, datetime, asyncio
+from discord.ext import commands
 from utils import errors, checks
 
 def get_embed(title, description='', color=0xf4fa72): 
@@ -60,21 +60,22 @@ class user(commands.Cog):
         
     @commands.command(name = "돈")
     async def user_money_check(self, ctx, user: typing.Optional[discord.Member] = None):
-        if user: user = user.id
-        else: user = ctx.author.id
+        if not user: user = ctx.author
+        if str(user.id) not in self.pool.keys(): raise errors.NotRegistered
         
-        money = self.pool[str(user)]["money"]
+        money = self.pool[str(user.id)]["money"]
         
         if money < 10000 ** 10:
-            suffix=['','만', '억', '조', '경', '해', '자', '양', '구', '간', '정', '재', '극','항하사','아승기','나유타','불가사의','무량대수','','','','','','','','구골','','','','','','','','','','','','','','','','','','','','','','','','']
+            suffix=['','만', '억', '조', '경', '해', '자', '양', '구', '간', '정', '재']
             a=10000 ** 12
             str_result = ''
-            for i in range(0,51):
+            for i in range(0,13):
                 if money >= a:
                     str_result += f"{int(money // a)}{suffix[-i]} "
                     money = money % a
                 a=a//10000
             money = str_result.strip()
+            if not money: money = 0
 
         await ctx.send(embed=get_embed(f'💸 | {user} 님의 지갑',f"{money} 원"))
 
@@ -82,16 +83,44 @@ class user(commands.Cog):
     async def user_bank_check(self, ctx):
         await ctx.send(str(self.client.pool[str(ctx.author.id)]["bank"]) + "원")
 
-    @commands.command(name = "저금")
-    async def user_bank_in(self, ctx):
+    @commands.group(name = "저금", invoke_without_command=True)
+    async def user_bank_in(self, ctx, n: int):
+        if n <= 0:
+            await ctx.send(embed = get_embed("입력한 값이 너무 작습니다!","0을 초과하는 정수값을 입력해주세요!",0xFF0000))
+            return
+        if self.pool[str(ctx.author.id)]["money"] < n:
+            await ctx.send(embed = get_embed("입력한 값이 너무 큽니다!","자신이 가진돈 이상 저금하실 수 없습니다!",0xFF0000))
+            return
+        self.client.pool[str(ctx.author.id)]["bank"] += n
+        self.client.pool[str(ctx.author.id)]["money"] -= n
+        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+            db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
+        await ctx.send("성공적으로 저금되었습니다")
+        
+    @user_bank_in.command(name='전체', aliases=['다','올인',"전부","최대"])
+    async def user_bank_in_all(self, ctx):
         self.client.pool[str(ctx.author.id)]["bank"] += self.client.pool[str(ctx.author.id)]["money"]
         self.client.pool[str(ctx.author.id)]["money"] = 0
         with open("./config/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
         await ctx.send("성공적으로 저금되었습니다")
     
-    @commands.command(name = "출금")
-    async def user_bank_out(self, ctx):
+    @commands.group(name = "출금", aliases = ["인출"], invoke_without_command=True)
+    async def user_bank_out(self, ctx, n: int):
+        if n <= 0:
+            await ctx.send(embed = get_embed("입력한 값이 너무 작습니다!","0을 초과하는 정수값을 입력해주세요!",0xFF0000))
+            return
+        if self.pool[str(ctx.author.id)]["money"] < n:
+            await ctx.send(embed = get_embed("입력한 값이 너무 큽니다!","자신이 가진돈 이상 저금하실 수 없습니다!",0xFF0000))
+            return
+        self.client.pool[str(ctx.author.id)]["bank"] += n
+        self.client.pool[str(ctx.author.id)]["money"] -= n
+        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+            db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
+        await ctx.send("성공적으로 출금되었습니다.")
+        
+    @user_bank_out.command(name='전체', aliases=['다','올인',"전부","최대"])
+    async def user_bank_out_all(self, ctx):
         self.client.pool[str(ctx.author.id)]["money"] += self.client.pool[str(ctx.author.id)]["bank"]
         self.client.pool[str(ctx.author.id)]["bank"] = 0
         with open("./config/user.json", "w", encoding='utf-8') as db_json:
@@ -100,15 +129,49 @@ class user(commands.Cog):
 
     @commands.command(name = "돈내놔")
     async def user_givemoney(self, ctx):
-        if self.client.pool[str(ctx.author.id)]["money"] >= 100:
+        if self.client.pool[str(ctx.author.id)]["money"] >= 10000:
             await ctx.send("작작해 이자식아")
         elif self.client.pool[str(ctx.author.id)]["money"] < 0:
             await ctx.send("여기 빚쟁이가 돈 뺏어가요 엉엉")
         else:
-            self.client.pool[str(ctx.author.id)]["money"] += 100
+            self.client.pool[str(ctx.author.id)]["money"] += 10000
             with open("./config/user.json", "w", encoding='utf-8') as db_json:
                 db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
-            await ctx.send("100원 입금 완료")
+            await ctx.send("10000원 입금 완료")
+            
+    @commands.command(name='송금', aliases=['입금'])
+    @commands.guild_only()
+    async def _give_money(self, ctx, muser: discord.Member, n: int):
+        if muser == ctx.author:
+            await ctx.send(embed=get_embed("<a:no:1001365885426073690> | 본인에게 송금은 불가합니다.","다른 사람을 멘션해주세요",0xff0000))
+            return
+        if n <= 0:
+            await ctx.send(embed = get_embed("입력한 값이 너무 작습니다!","0을 초과하는 정수값을 입력해주세요!",0xFF0000))
+            return
+        if self.pool[str(ctx.author.id)]["money"] < n:
+            await ctx.send(embed = get_embed("입력한 값이 너무 큽니다!","자신이 가진돈 이상 저금하실 수 없습니다!",0xFF0000))
+            return
+        try: sendmoney = int(n ** (3/4))
+        except OverflowError: 
+            await ctx.send(embed=get_embed("<a:no:1001365885426073690> | 돈이 너무 커서 송금이 불가합니다.","더 작은수를 입력해주세요.",0xff0000))
+            return
+        if str(muser.id) not in self.pool.keys(): raise errors.NotRegistered
+        msg = await ctx.send(embed=get_embed("📝 | **송금**",f"**{ctx.author}**님이 **{muser}**님에게 송금\n**전송되는 금액 (수수료 차감)** = {sendmoney}"))
+        emjs=['<a:ok:1001365881160466472>','<a:no:1001365885426073690>']
+        for em in emjs: await msg.add_reaction(em)
+        def check(reaction, user): return user == ctx.author and msg.id == reaction.message.id and str(reaction.emoji) in emjs
+        try: reaction, user = await self.client.wait_for('reaction_add', check=check, timeout=20)
+        except asyncio.TimeoutError: await asyncio.gather(msg.delete(), ctx.send(embed=get_embed('⏰ | 시간이 초과되었습니다!',"", 0xFF0000)))
+        else:
+            e = str(reaction.emoji)
+            if e == '<a:ok:1001365881160466472>':
+                self.client.pool[str(ctx.author.id)]["money"] -= n
+                self.client.pool[str(muser.id)]["money"] += sendmoney
+                await ctx.send(embed=get_embed(f"{ctx.author.name}님이 {muser.name}님에게 송금하셨습니다",f"송금 금액 : {n}\n\n받은 금액 (수수료 차감) : {sendmoney}"))
+                return
+            elif e == '<a:no:1001365885426073690>':
+                await asyncio.gather(msg.delete(),ctx.send(embed=get_embed('<a:no:698461934613168199> | 취소 되었습니다!',"", 0xFF0000)))
+                return
     
     @commands.group(name = "도박", invoke_without_command=True)
     async def lottery(self, ctx, n):

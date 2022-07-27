@@ -1,7 +1,7 @@
 {
     "467666650183761920": {
-        "money": 130,
-        "bank": 0,
+        "money": 699999999225114,
+        "bank": 10098,
         "reinforce": {
             "ㅇ": 99,
             "ㄴ": 99
@@ -14,6 +14,13 @@
         "bank": 0,
         "reinforce": {},
         "blacklist": true,
+        "permission": "User"
+    },
+    "485056121741246465": {
+        "money": 0,
+        "bank": 0,
+        "reinforce": {},
+        "blacklist": false,
         "permission": "User"
     }
 }
