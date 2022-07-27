@@ -156,7 +156,7 @@ class user(commands.Cog):
             await ctx.send(embed=get_embed("<a:no:1001365885426073690> | 돈이 너무 커서 송금이 불가합니다.","더 작은수를 입력해주세요.",0xff0000))
             return
         if str(muser.id) not in self.pool.keys(): raise errors.NotRegistered
-        msg = await ctx.send(embed=get_embed("📝 | **송금**",f"**{ctx.author}**님이 **{muser}**님에게 송금\n**전송되는 금액 (수수료 차감)** = {sendmoney}"))
+        msg = await ctx.send(embed=get_embed("📝 | **송금**",f"**{ctx.author}**님이 **{muser}**님에게 송금\n**전송되는 금액 (수수료 차감)** = {sendmoney} (수수료 = {n - sendmoney})"))
         emjs=['<a:ok:1001365881160466472>','<a:no:1001365885426073690>']
         for em in emjs: await msg.add_reaction(em)
         def check(reaction, user): return user == ctx.author and msg.id == reaction.message.id and str(reaction.emoji) in emjs
@@ -167,7 +167,7 @@ class user(commands.Cog):
             if e == '<a:ok:1001365881160466472>':
                 self.client.pool[str(ctx.author.id)]["money"] -= n
                 self.client.pool[str(muser.id)]["money"] += sendmoney
-                await ctx.send(embed=get_embed(f"{ctx.author.name}님이 {muser.name}님에게 송금하셨습니다",f"송금 금액 : {n}\n\n받은 금액 (수수료 차감) : {sendmoney}"))
+                await ctx.send(embed=get_embed(f"{ctx.author.name}님이 {muser.name}님에게 송금하셨습니다",f"송금 금액 : {n}\n{ctx.author}님의 남은 금액 : {self.client.pool[str(ctx.author.id)]['money']}\n\n받은 금액 (수수료 차감) : {sendmoney} (수수료 = {n - sendmoney})\n{muser}님의 남은 금액 : {self.client.pool[str(muser.id)]['money']}"))
                 return
             elif e == '<a:no:1001365885426073690>':
                 await asyncio.gather(msg.delete(),ctx.send(embed=get_embed('<a:no:698461934613168199> | 취소 되었습니다!',"", 0xFF0000)))
