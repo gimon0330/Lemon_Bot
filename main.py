@@ -1,7 +1,7 @@
 import discord, os, json
 from discord.ext import commands
 
-client = commands.AutoShardedBot(command_prefix="ㄹ!")
+client = commands.AutoShardedBot(command_prefix=["ㄹ!","레몬아 ",'레 ',"f!"])
 
 user_datadb = {}
 with open("./config/user.json", "r", encoding='UTF8') as db_json:  

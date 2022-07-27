@@ -18,7 +18,7 @@ class join(commands.Cog):
             "money": 0,
             "bank": 0,
             "reinforce": {},
-            "blacklist": True,
+            "blacklist": False,
             "permission": "User"
         }
         

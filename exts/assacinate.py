@@ -1,6 +1,9 @@
 import discord, json
 from discord.ext import commands 
 
+def get_embed(title, description='', color=0xf4fa72): 
+    return discord.Embed(title=title,description=description,color=color)
+
 class assacinate(commands.Cog):
     def __init__(self, client):
         self.client = client
