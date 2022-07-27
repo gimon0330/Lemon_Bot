@@ -1,4 +1,4 @@
-import discord, json, traceback
+import discord, traceback
 from discord.ext import commands 
 from utils import checks
 

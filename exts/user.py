@@ -2,7 +2,7 @@ import json, discord, random, typing, datetime
 from discord.ext import commands 
 from utils import errors, checks
 
-def get_embed(title, description='', color=0xccffff): 
+def get_embed(title, description='', color=0xf4fa72): 
     return discord.Embed(title=title,description=description,color=color)
 
 class user(commands.Cog):

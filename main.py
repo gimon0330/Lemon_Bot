@@ -12,4 +12,4 @@ client.pool = user_datadb
 for ext in filter(lambda x: x.endswith('.py') and not x.startswith('_'), os.listdir('./exts')):
     client.load_extension('exts.' + os.path.splitext(ext)[0])
 
-client.run("Token")
+client.run("NzUxNjYwNTc2NTg5MjE3ODkz.G7r47R.l-6iZZOM54oitPNB1ER2f3lDD-kDQrDSg1HP9A")

@@ -1,7 +1,7 @@
 import discord, typing
 from discord.ext import commands
 
-def get_embed(title, description='', color=0xccffff): 
+def get_embed(title, description='', color=0xf4fa72): 
     return discord.Embed(title=title,description=description,color=color) #이해하려 하지마세요 ㅎㅎ 어려운 코드입니다.
 
 class BaseCmds(commands.Cog):
