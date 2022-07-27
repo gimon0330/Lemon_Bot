@@ -145,8 +145,8 @@ class user(commands.Cog):
         if muser == ctx.author:
             await ctx.send(embed=get_embed("<a:no:1001365885426073690> | 본인에게 송금은 불가합니다.","다른 사람을 멘션해주세요",0xff0000))
             return
-        if n <= 0:
-            await ctx.send(embed = get_embed("입력한 값이 너무 작습니다!","0을 초과하는 정수값을 입력해주세요!",0xFF0000))
+        if n < 100:
+            await ctx.send(embed = get_embed("입력한 값이 너무 작습니다!","100이상의 정수값을 입력해주세요!",0xFF0000))
             return
         if self.pool[str(ctx.author.id)]["money"] < n:
             await ctx.send(embed = get_embed("입력한 값이 너무 큽니다!","자신이 가진돈 이상 저금하실 수 없습니다!",0xFF0000))
