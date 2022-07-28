@@ -2,7 +2,13 @@
     "472048060483239939": {
         "money": 0,
         "bank": 0,
-        "reinforce": {},
+        "reinforce": {
+            "비트세이버": {
+                "level": 110,
+                "starforce": 0,
+                "broken": true
+            }
+        },
         "blacklist": true,
         "permission": "User"
     },
@@ -16,21 +22,8 @@
     "467666650183761920": {
         "money": 0,
         "bank": 0,
-        "reinforce": {
-            "ㄹ": {
-                "level": 0,
-                "starforce": 0,
-                "broken": false
-            }
-        },
-        "blacklist": false,
-        "permission": "Master"
-    },
-    "685411330005663764": {
-        "money": 0,
-        "bank": 0,
         "reinforce": {},
         "blacklist": false,
-        "permission": "User"
+        "permission": "Master"
     }
 }

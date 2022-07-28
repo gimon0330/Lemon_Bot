@@ -47,7 +47,7 @@ class user(commands.Cog):
             if user.guild_permissions.administrator: embed.add_field(name="서버 권한", value="Admin")
             else: embed.add_field(name="서버 권한", value="User")
             if str(user.id) in self.pool.keys():
-                reinlist = [k for k, v in self.pool[str(user.id)]["reinforce"].items() if v >= 100]
+                reinlist = [k for k, v in self.pool[str(user.id)]["reinforce"].items() if v["level"] >= 100]
                 embed.add_field(
                     name="Lemon System", 
                     value=f">>> **Permission**: {self.pool[str(user.id)]['permission']}\n" +
