@@ -2,13 +2,7 @@
     "472048060483239939": {
         "money": 0,
         "bank": 0,
-        "reinforce": {
-            "비트세이버": {
-                "level": 110,
-                "starforce": 0,
-                "broken": true
-            }
-        },
+        "reinforce": {},
         "blacklist": true,
         "permission": "User"
     },
@@ -24,6 +18,11 @@
         "bank": 0,
         "reinforce": {},
         "blacklist": false,
-        "permission": "Master"
+        "permission": "Master",
+        "profile": {
+            "money_open": true,
+            "color": 16054898
+        },
+        "inventory": {}
     }
 }

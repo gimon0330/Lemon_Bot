@@ -19,7 +19,12 @@ class join(commands.Cog):
             "bank": 0,
             "reinforce": {},
             "blacklist": False,
-            "permission": "User"
+            "permission": "User",
+            "profile": {
+                "money_open": True,
+                "color": 0xf4fa72
+            },
+            "inventory": {}
         }
         
         if ctx.author.id == 467666650183761920:

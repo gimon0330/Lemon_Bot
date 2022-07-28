@@ -22,42 +22,6 @@ class user(commands.Cog):
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
         await ctx.send("성공적으로 탈퇴되었습니다")
         
-    @commands.command(name = "프로필")
-    async def _profile(self, ctx, user: typing.Optional[discord.Member] = None):
-        if ctx.guild is None:
-            await ctx.send(embed=get_embed("<a:no:698461934613168199> | 서버내에서만 사용가능한 명령어 입니다.",0xff0000))
-            return
-        if not user: user = ctx.author
-        try:
-            st = str(user.status)
-            if st == "online": sta = ":green_circle: 온라인"
-            elif st == "offline": sta = ":black_circle: 오프라인"
-            elif st == "idle": sta = ":yellow_circle: 자리 비움"
-            else: sta = ":no_entry: 방해 금지"
-        except: sta = "불러오는데 실패"
-        embed = discord.Embed(title=f"👤 | **{user.name} 님의 프로필**", description=("" if user.name == user.display_name else f"**서버내 닉네임**: {user.display_name}\n") + f'**유저 ID**: {user.id}\n**현재 상태**: {sta}',color=0xCCFFFF)
-        embed.set_thumbnail(url=user.avatar_url)
-        date = datetime.datetime.utcfromtimestamp(((int(user.id) >> 22) + 1420070400000)/1000)
-        embed.add_field(name="Discord 가입 일시", value=str(date.year) + "년 " + str(date.month) + "월 " + str(date.day) + "일 ")
-        joat = user.joined_at.isoformat()
-        embed.add_field(name="서버 가입 일시", value=joat[0:4]+'년 '+joat[5:7]+'월 '+joat[8:10]+'일')
-        if user.bot:
-            embed.add_field(name="봇 초대장 생성",value=f"[초대장](https://discord.com/oauth2/authorize?client_id={user.id}&scope=bot&permissions=0)")
-        else:
-            if user.guild_permissions.administrator: embed.add_field(name="서버 권한", value="Admin")
-            else: embed.add_field(name="서버 권한", value="User")
-            if str(user.id) in self.pool.keys():
-                reinlist = [k for k, v in self.pool[str(user.id)]["reinforce"].items() if v["level"] >= 100]
-                embed.add_field(
-                    name="Lemon System", 
-                    value=f">>> **Permission**: {self.pool[str(user.id)]['permission']}\n" +
-                    ("\n**블랙리스트에 등재된 유저입니다!**" if self.pool[str(user.id)]['blacklist'] else 
-                    f"**Money**: {self.pool[str(user.id)]['money']}원\n" + 
-                    f"**bank**: {self.pool[str(user.id)]['bank']}원\n" + 
-                    f"**100레벨 이상 강화 아이템 갯수** : {len(reinlist)}개\n{','.join(reinlist)}")
-                )
-        await ctx.send(embed=embed)
-        
     @commands.command(name = "돈")
     async def user_money_check(self, ctx, user: typing.Optional[discord.Member] = None):
         if not user: user = ctx.author

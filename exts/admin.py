@@ -39,7 +39,7 @@ class admin(commands.Cog):
     
     @commands.command(name='강화설정')
     async def reinforce_set(self, ctx, uid: str, name: str, level: int):
-        self.client.pool[uid]["reinforce"][name] = level
+        self.client.pool[uid]["reinforce"][name]["level"] = level
         await ctx.send(f"{uid}님의 {name} Level을 {level}로 설정하였습니다")
         
     @commands.command(name='돈설정')
@@ -54,12 +54,17 @@ class admin(commands.Cog):
         
     @commands.command(name='강제가입')
     async def _force_register(self, ctx: commands.Context, uid: str):
-        self.client.pool[uid] = {
+        self.client.pool[str(ctx.author.id)] = {
             "money": 0,
             "bank": 0,
             "reinforce": {},
             "blacklist": False,
-            "permission": "User"
+            "permission": "User",
+            "profile": {
+                "money_open": True,
+                "color": 0xf4fa72
+            },
+            "inventory": {}
         }
         if uid in self.client.pool.keys():
             await ctx.send(f"등록되어 있지 않은 유저 {uid}님을 강제로 가입시켰습니다")
