@@ -1,14 +1,4 @@
 {
-    "467666650183761920": {
-        "money": 699999999225114,
-        "bank": 10098,
-        "reinforce": {
-            "ㅇ": 99,
-            "ㄴ": 99
-        },
-        "blacklist": false,
-        "permission": "Master"
-    },
     "472048060483239939": {
         "money": 0,
         "bank": 0,
@@ -17,6 +7,26 @@
         "permission": "User"
     },
     "485056121741246465": {
+        "money": 0,
+        "bank": 0,
+        "reinforce": {},
+        "blacklist": false,
+        "permission": "User"
+    },
+    "467666650183761920": {
+        "money": 0,
+        "bank": 0,
+        "reinforce": {
+            "ㄹ": {
+                "level": 0,
+                "starforce": 0,
+                "broken": false
+            }
+        },
+        "blacklist": false,
+        "permission": "Master"
+    },
+    "685411330005663764": {
         "money": 0,
         "bank": 0,
         "reinforce": {},

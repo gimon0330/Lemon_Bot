@@ -47,14 +47,14 @@ class user(commands.Cog):
             if user.guild_permissions.administrator: embed.add_field(name="서버 권한", value="Admin")
             else: embed.add_field(name="서버 권한", value="User")
             if str(user.id) in self.pool.keys():
-                reinlist = [k for k, v in self.pool[str(user.id)]["reinforce"].items() if v >= 30]
+                reinlist = [k for k, v in self.pool[str(user.id)]["reinforce"].items() if v >= 100]
                 embed.add_field(
                     name="Lemon System", 
                     value=f">>> **Permission**: {self.pool[str(user.id)]['permission']}\n" +
                     ("\n**블랙리스트에 등재된 유저입니다!**" if self.pool[str(user.id)]['blacklist'] else 
                     f"**Money**: {self.pool[str(user.id)]['money']}원\n" + 
                     f"**bank**: {self.pool[str(user.id)]['bank']}원\n" + 
-                    f"**30레벨 이상 강화 아이템 갯수** : {len(reinlist)}개\n{','.join(reinlist)}")
+                    f"**100레벨 이상 강화 아이템 갯수** : {len(reinlist)}개\n{','.join(reinlist)}")
                 )
         await ctx.send(embed=embed)
         
@@ -143,34 +143,34 @@ class user(commands.Cog):
     @commands.guild_only()
     async def _give_money(self, ctx, muser: discord.Member, n: int):
         if muser == ctx.author:
-            await ctx.send(embed=get_embed("<a:no:1001365885426073690> | 본인에게 송금은 불가합니다.","다른 사람을 멘션해주세요",0xff0000))
+            await ctx.send(embed=get_embed(self.client.no_emoji + " | 본인에게 송금은 불가합니다.","다른 사람을 멘션해주세요",0xff0000))
             return
         if n < 100:
-            await ctx.send(embed = get_embed("입력한 값이 너무 작습니다!","100이상의 정수값을 입력해주세요!",0xFF0000))
+            await ctx.send(embed = get_embed(self.client.no_emoji + " | 입력한 값이 너무 작습니다!","100이상의 정수값을 입력해주세요!",0xFF0000))
             return
         if self.pool[str(ctx.author.id)]["money"] < n:
-            await ctx.send(embed = get_embed("입력한 값이 너무 큽니다!","자신이 가진돈 이상 저금하실 수 없습니다!",0xFF0000))
+            await ctx.send(embed = get_embed(self.client.no_emoji + " | 입력한 값이 너무 큽니다!","자신이 가진돈 이상 저금하실 수 없습니다!",0xFF0000))
             return
         try: sendmoney = int(n ** (3/4))
         except OverflowError: 
-            await ctx.send(embed=get_embed("<a:no:1001365885426073690> | 돈이 너무 커서 송금이 불가합니다.","더 작은수를 입력해주세요.",0xff0000))
+            await ctx.send(embed=get_embed(self.client.no_emoji + " | 돈이 너무 커서 송금이 불가합니다.","더 작은수를 입력해주세요.",0xff0000))
             return
         if str(muser.id) not in self.pool.keys(): raise errors.NotRegistered
         msg = await ctx.send(embed=get_embed("📝 | **송금**",f"**{ctx.author}**님이 **{muser}**님에게 송금\n**전송되는 금액 (수수료 차감)** = {sendmoney}원 (수수료 = **{n - sendmoney}원**)"))
-        emjs=['<a:ok:1001365881160466472>','<a:no:1001365885426073690>']
+        emjs=[self.client.yes_emoji, self.client.no_emoji]
         for em in emjs: await msg.add_reaction(em)
         def check(reaction, user): return user == ctx.author and msg.id == reaction.message.id and str(reaction.emoji) in emjs
         try: reaction, user = await self.client.wait_for('reaction_add', check=check, timeout=20)
         except asyncio.TimeoutError: await asyncio.gather(msg.delete(), ctx.send(embed=get_embed('⏰ | 시간이 초과되었습니다!',"", 0xFF0000)))
         else:
             e = str(reaction.emoji)
-            if e == '<a:ok:1001365881160466472>':
+            if e == self.client.yes_emoji:
                 self.client.pool[str(ctx.author.id)]["money"] -= n
                 self.client.pool[str(muser.id)]["money"] += sendmoney
                 await ctx.send(embed=get_embed(f"{ctx.author.name}님이 {muser.name}님에게 송금하셨습니다",f"송금 금액 : {n}\n{ctx.author}님의 남은 금액 : {self.client.pool[str(ctx.author.id)]['money']}\n\n**받은 금액 (수수료 차감)** = {sendmoney}원 (수수료 = **{n - sendmoney}원**)\n{muser}님의 남은 금액 : {self.client.pool[str(muser.id)]['money']}"))
                 return
-            elif e == '<a:no:1001365885426073690>':
-                await asyncio.gather(msg.delete(),ctx.send(embed=get_embed('<a:no:698461934613168199> | 취소 되었습니다!',"", 0xFF0000)))
+            elif e == self.client.no_emoji:
+                await asyncio.gather(msg.delete(),ctx.send(embed=get_embed(self.client.no_emoji + ' | 취소 되었습니다!',"", 0xFF0000)))
                 return
     
     @commands.group(name = "도박", invoke_without_command=True)
@@ -209,38 +209,111 @@ class user(commands.Cog):
         self.client.pool[str(ctx.author.id)]["money"] = 0
         await ctx.send("예기치 못한 오류로 인해 송금 과정에서 오류가 났습니다.")
             
-    @commands.group(name = "강화", invoke_without_command = True)
-    async def reinforce(self, ctx, name):
-        a = random.randint(1,100)
-        b = random.randint(1,10)
-        if name not in self.client.pool[str(ctx.author.id)]["reinforce"]:
-            await ctx.send(embed = get_embed(f"{name}는 "))
-        lev = self.client.pool[str(ctx.author.id)]["reinforce"]["name"]
-        if a == 1:
-            await ctx.send("파괴되었습니다 ㅅㄱㅋ")
-            self.client.pool[str(ctx.author.id)]["reinforce"] = 0
-            with open("./config/user.json", "w", encoding='utf-8') as db_json:
-                db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
-        elif a>1 and a<=20:
-            if lev < b:
-                await ctx.send("강화에 실패하여 0렙으로 되돌아왔습니다.")
-                self.client.pool[str(ctx.author.id)]["reinforce"] = 0
-                with open("./config/user.json", "w", encoding='utf-8') as db_json:
-                    db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
+    @commands.group(name='강화', aliases=['강'], invoke_without_command=True)
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def _reinforce(self, ctx, *, weapon):
+        user = ctx.author.id
+        if not weapon:
+            await ctx.send("알티야 강화 (이름)의 형식으로 사용해주세용")
+            return
+        
+        if weapon not in self.client.pool[str(user)]["reinforce"].keys():
+            if self.client.pool[str(user)]["reinforce"].keys().__len__() > 30:
+                await ctx.send("무기 제작은 최대 30개만 가능합니다!")
+                return
+                
+            msg = await ctx.send(embed=get_embed(":hammer: | 무기 제작","새로운 무기를 제작합니다!\n가격은 {Null}입니다!\n제작하시겠습니까?"))
+            emjs=[self.client.yes_emoji, self.client.no_emoji]
+            await msg.add_reaction(emjs[0])
+            await msg.add_reaction(emjs[1])
+            def check(reaction, user):
+                return user == ctx.author and msg.id == reaction.message.id and str(reaction.emoji) in emjs
+            try:
+                reaction, user = await self.client.wait_for('reaction_add', check=check, timeout=60)
+            except asyncio.TimeoutError:
+                await asyncio.gather(msg.delete(),ctx.send(embed=get_embed('⏰ | 시간이 초과되었습니다!',"", 0xFF0000)))
+                return
             else:
-                await ctx.send("강화에 실패하여 %d 만큼 하락했습니다" %b)
-                self.client.pool[str(ctx.author.id)]["reinforce"] -= b
-                with open("./config/user.json", "w", encoding='utf-8') as db_json:
-                    db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
+                e = str(reaction.emoji)
+                if e == self.client.yes_emoji:
+                    level = self.client.pool[str(user.id)]["reinforce"][weapon] = {
+                        "level": 0,
+                        "starforce": 0,
+                        "broken": False
+                    }
+                    await ctx.send(embed=get_embed(":hammer: | 무기 제작","제작 완료했습니다! 다시 강화를 눌러 강화해주세요!"))
+                    return
+                elif e == self.client.no_emoji:
+                    await ctx.send(embed=get_embed("{self.client.no_emoji} | 취소 되었습니다.","",0xff0000))
+                    return
+                
+        level = self.client.pool[str(user)]["reinforce"][weapon]["level"]
+        
+        if level >= 100:
+            msg = await ctx.send(embed=get_embed(":star: | 스타 강화","100렙을 넘으셔서 특수강화 도전을 하실수 있습니다.\n성공 : 30%\n강화 실패 : 50%\n파괴 : 20%\n도전 하시겠습니까?"))
+            emjs=[self.client.yes_emoji, self.client.no_emoji]
+            await msg.add_reaction(emjs[0])
+            await msg.add_reaction(emjs[1])
+            def check(reaction, user):
+                return user == ctx.author and msg.id == reaction.message.id and str(reaction.emoji) in emjs
+            try:
+                reaction, user = await self.client.wait_for('reaction_add', check=check, timeout=60)
+            except asyncio.TimeoutError:
+                await asyncio.gather(msg.delete(),ctx.send(embed=get_embed('⏰ | 시간이 초과되었습니다!',"", 0xFF0000)))
+                return
+            else:
+                e = str(reaction.emoji)
+                if e == self.client.yes_emoji:
+                    rand = random.randint(0,9)
+                    starforce = self.client.pool[str(user.id)]["reinforce"][weapon]["starforce"]
+                    if rand < 3:
+                        self.client.pool[str(user.id)]["reinforce"][weapon]["starforce"] += 1
+                        await ctx.send(embed=get_embed(f"{self.client.yes_emoji} | {weapon}의 스타가 **1레벨** 성장했습니다.",f"현재 레벨 : **{starforce+1}**"))
+                        return
+                    elif rand < 7:
+                        self.client.pool[str(user.id)]["reinforce"][weapon]["starforce"] -= 1
+                        await ctx.send(embed=get_embed(f"{self.client.yes_emoji} | {weapon}의 스타가 **1레벨** 하락했습니다.",f"현재 레벨 : **{starforce}**",0xff0000))
+                        return
+                    else:
+                        self.client.pool[str(user.id)]["reinforce"][weapon]["starforce"] = 0
+                        self.client.pool[str(user.id)]["reinforce"][weapon]["broken"] = True
+                        await ctx.send(embed=get_embed(f"{self.client.no_emoji} | {weapon} (이)가 파괴되었습니다.","",0xff0000))
+                        return
+                elif e == self.client.no_emoji:
+                    await ctx.send(embed=get_embed("{self.client.no_emoji} | 취소 되었습니다.","",0xff0000))
+                    return
         else:
-            await ctx.send("성공! %d 만큼 레벨 상승!" %b)
-            self.client.pool[str(ctx.author.id)]["reinforce"] += b
-            with open("./config/user.json", "w", encoding='utf-8') as db_json:
-                db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
+            msg = await ctx.send(embed=get_embed(":hammer: | 기본 강화","강화에 도전합니다!\n가격은 무료입니다!\n\n성공 : 70% (2~15 레벨 랜덤 오름)\n실패 : 30% (실패시 파괴)\n도전 하시겠습니까?"))
+            emjs=[self.client.yes_emoji, self.client.no_emoji]
+            await msg.add_reaction(emjs[0])
+            await msg.add_reaction(emjs[1])
+            def check(reaction, user):
+                return user == ctx.author and msg.id == reaction.message.id and str(reaction.emoji) in emjs
+            try:
+                reaction, user = await self.client.wait_for('reaction_add', check=check, timeout=60)
+            except asyncio.TimeoutError:
+                await asyncio.gather(msg.delete(),ctx.send(embed=get_embed('⏰ | 시간이 초과되었습니다!',"", 0xFF0000)))
+                return
+            else:
+                e = str(reaction.emoji)
+                if e == self.client.yes_emoji:
+                    rand = random.randint(0,9)
+                    if rand < 7:
+                        n = random.randint(5,20)
+                        self.client.pool[str(user.id)]["reinforce"][weapon]["level"] += n
+                        await ctx.send(embed=get_embed(f"{self.client.yes_emoji} | {weapon} (이)가 **{n}레벨** 성장했습니다.",f"현재 레벨 : **{level+n}**"))
+                        return
+                    else:
+                        del self.client.pool[str(user.id)]["reinforce"][weapon]
+                        await ctx.send(embed=get_embed(f"{self.client.no_emoji} | {weapon} (이)가 파괴되었습니다.","",0xff0000))
+                        return
+                elif e == self.client.no_emoji:
+                    await ctx.send(embed=get_embed("{self.client.no_emoji} | 취소 되었습니다.","",0xff0000))
+                    return
             
-    @reinforce.command(name = "목록")
+    @_reinforce.command(name = "목록")
     async def level(self, ctx):
-        reinlist = [f"**Lv{v}** {k}" for k, v in self.pool[str(ctx.author.id)]["reinforce"].items()]
+        reinlist = [f"**Lv{v['level']}** {':star:' * v['starforce']} {k}" for k, v in self.pool[str(ctx.author.id)]["reinforce"].items()]
         await ctx.send(embed=get_embed(f"🛠️ | {ctx.author.name}님의 강화목록입니다. (총 {len(reinlist)}개)", "\n".join(reinlist)))
 
 def setup(client):
