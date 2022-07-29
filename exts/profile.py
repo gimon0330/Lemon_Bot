@@ -1,5 +1,6 @@
 import discord, json, typing, datetime, asyncio
 from discord.ext import commands 
+from utils import errors, checks
 
 def get_embed(title, description='', color=0xf4fa72): 
     return discord.Embed(title=title,description=description,color=color)
@@ -8,6 +9,9 @@ class profile(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.pool = self.client.pool
+        self.checks = checks.checks(self.pool)
+        
+        self._profile_setup.add_check(self.checks.registered)
 
     @commands.group(name = "프로필", invoke_without_command = True)
     async def _profile(self, ctx, user: typing.Optional[discord.Member] = None):

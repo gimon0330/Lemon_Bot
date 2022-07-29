@@ -13,7 +13,7 @@ class admin(commands.Cog):
 
         for cmds in self.get_commands():
             cmds.add_check(self.checks.registered)
-            cmds.add_check(self.checks.master)
+            #cmds.add_check(self.checks.master)
 
     @commands.command(name="eval")
     async def _eval(self, ctx, *, arg):

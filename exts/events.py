@@ -31,7 +31,7 @@ class events(commands.Cog):
             return
 
         elif isinstance(error, errors.NotRegistered):
-            await ctx.send(embed=get_embed('가입 되어 있지 않습니다!',"<알티야 가입> 으로 가입해주세요"))
+            await ctx.send(embed=get_embed('가입 되어 있지 않습니다!',"<ㄹ!가입> 으로 가입해주세요"))
             return
 
         elif isinstance(error, errors.NoMoney):
