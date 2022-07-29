@@ -324,7 +324,7 @@ class user(commands.Cog):
                     return
                 
         else:
-            msg = await ctx.send(embed=get_embed(":hammer: | 기본 강화","강화에 도전합니다!\n가격은 무료입니다!\n\n성공 : 70% (2~15 레벨 랜덤 오름)\n실패 : 30% (실패시 파괴)\n도전 하시겠습니까?"), reference = ctx.message)
+            msg = await ctx.send(embed=get_embed(":hammer: | 기본 강화","강화에 도전합니다!\n가격은 무료입니다!\n\n성공 : 70% (5~16 레벨 랜덤 오름)\n실패 : 30% (실패시 파괴)\n도전 하시겠습니까?"), reference = ctx.message)
             emjs=[self.client.yes_emoji, self.client.no_emoji]
             await msg.add_reaction(emjs[0])
             await msg.add_reaction(emjs[1])
@@ -338,9 +338,9 @@ class user(commands.Cog):
             else:
                 e = str(reaction.emoji)
                 if e == self.client.yes_emoji:
-                    rand = random.randint(0,9)
-                    if rand < 7:
-                        n = random.randint(5,20)
+                    rand = random.choices([True, False], weights = [70, 30])
+                    if rand:
+                        n = random.randint(5,16)
                         self.client.pool[str(user.id)]["reinforce"][weapon]["level"] += n
                         await ctx.send(embed=get_embed(f"{self.client.yes_emoji} | {weapon} (이)가 **{n}레벨** 성장했습니다.",f"현재 레벨 : **{level+n}**"), reference = ctx.message)
                         if self.client.pool[str(user.id)]["reinforce"][weapon]["level"] > 100:
