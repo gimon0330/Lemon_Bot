@@ -182,12 +182,12 @@ class user(commands.Cog):
     async def _reinforce(self, ctx, *, weapon):
         user = ctx.author.id
         if not weapon:
-            await ctx.send("알티야 강화 (이름)의 형식으로 사용해주세용")
+            await ctx.send("ㄹ!강화 (이름)의 형식으로 사용해주세용")
             return
         
         if weapon not in self.client.pool[str(user)]["reinforce"].keys():
-            if self.client.pool[str(user)]["reinforce"].keys().__len__() > 12:
-                await ctx.send("무기 제작은 최대 12개만 가능합니다!")
+            if self.client.pool[str(user)]["reinforce"].keys().__len__() > 7:
+                await ctx.send("무기 제작은 최대 8개만 가능합니다!")
                 return
                 
             msg = await ctx.send(embed=get_embed(":hammer: | 무기 제작","새로운 무기를 제작합니다!\n가격은 {Null}입니다!\n제작하시겠습니까?"), reference = ctx.message)
@@ -371,6 +371,61 @@ class user(commands.Cog):
             if v["broken"]: str_ = "**(파괴됨)** " + str_
             reinlist.append(str_)
         await ctx.send(embed=get_embed(f"🛠️ | {user.name}님의 강화목록입니다. (총 {len(reinlist)}개)", "\n".join(reinlist)))
+        
+    @_reinforce.command(name = "삭제")
+    async def _delete(self, ctx, *, weapon):
+        if weapon not in self.client.pool[str(ctx.author.id)]["reinforce"].keys():
+            await ctx.send(embed=get_embed("{self.client.no_emoji} | 존재하지 않는 무기입니다.","",0xff0000), reference = ctx.message)
+            return
+        
+        msg = await ctx.send(embed = get_embed("무기를 삭제하시겠습니까?",f"대상 무기: {weapon}\n삭제시 다시는 복구하지 못합니다."), reference = ctx.message)
+        emjs = [self.client.yes_emoji, self.client.no_emoji]
+        await msg.add_reaction(emjs[0])
+        await msg.add_reaction(emjs[1])
+        def check(reaction, user):
+            return user == ctx.author and msg.id == reaction.message.id and str(reaction.emoji) in emjs
+        try:
+            reaction, user = await self.client.wait_for('reaction_add', check=check, timeout=60)
+        except asyncio.TimeoutError:
+            await asyncio.gather(msg.delete(),ctx.send(embed=get_embed('⏰ | 시간이 초과되었습니다!',"", 0xFF0000), reference = ctx.message))
+            return
+        else:
+            e = str(reaction.emoji)
+            if e == self.client.yes_emoji:
+                del self.client.pool[str(ctx.author.id)]["reinforce"][weapon]
+                await ctx.send(embed = get_embed("무기를 삭제했습니다!"), reference = ctx.message)
+            elif e == self.client.no_emoji:
+                await ctx.send(embed = get_embed(self.client.no_emoji + " | 취소했습니다."), reference = ctx.message)
+                
+    @_reinforce.command(name = "이름변경")
+    async def _rename(self, ctx, *, weapon):
+        if weapon not in self.client.pool[str(ctx.author.id)]["reinforce"].keys():
+            await ctx.send(embed=get_embed("{self.client.no_emoji} | 존재하지 않는 무기입니다.","",0xff0000), reference = ctx.message)
+            return
+        
+        await ctx.send(embed = get_embed("변경하실 무기 이름을 적어주세요",f"대상 무기: {weapon}"), reference = ctx.message)
+        
+        def check(author):
+            def inner_check(message): 
+                if message.author != author: return False
+                else: return True
+            return inner_check
+        
+        try: msg = await self.client.wait_for('message',check=check(ctx.author),timeout=20)
+        except asyncio.TimeoutError: 
+            self.gaming_list.remove(ctx.author.id)
+            await ctx.send(embed=get_embed('⏰ | 시간이 초과되었습니다!',"", 0xFF0000), reference = ctx.message)
+            return
+        else: 
+            name = msg.content
+            if name in self.client.pool[str(ctx.author.id)]["reinforce"].keys():
+                await ctx.send(embed=get_embed('이미 존재하는 무기 이름입니다!',"", 0xFF0000), reference = ctx.message)
+                return
+            
+            self.client.pool[str(ctx.author.id)]["reinforce"][name] = self.client.pool[str(ctx.author.id)]["reinforce"][weapon]
+            del self.client.pool[str(ctx.author.id)]["reinforce"][weapon]
+            await ctx.send(embed = get_embed("이름 변경을 완료 했습니다!",f"{weapon} ==> {name}"), reference = ctx.message)
+        
 
 def setup(client):
     client.add_cog(user(client))
