@@ -1,5 +1,7 @@
 import json, discord, random, typing, datetime, asyncio
+from re import S
 from discord.ext import commands
+from numpy import s_
 from utils import errors, checks
 
 def get_embed(title, description='', color=0xf4fa72): 
@@ -182,8 +184,8 @@ class user(commands.Cog):
             return
         
         if weapon not in self.client.pool[str(user)]["reinforce"].keys():
-            if self.client.pool[str(user)]["reinforce"].keys().__len__() > 30:
-                await ctx.send("무기 제작은 최대 30개만 가능합니다!")
+            if self.client.pool[str(user)]["reinforce"].keys().__len__() > 12:
+                await ctx.send("무기 제작은 최대 12개만 가능합니다!")
                 return
                 
             msg = await ctx.send(embed=get_embed(":hammer: | 무기 제작","새로운 무기를 제작합니다!\n가격은 {Null}입니다!\n제작하시겠습니까?"))
@@ -208,13 +210,28 @@ class user(commands.Cog):
                     await ctx.send(embed=get_embed(":hammer: | 무기 제작","제작 완료했습니다! 다시 강화를 눌러 강화해주세요!"))
                     return
                 elif e == self.client.no_emoji:
-                    await ctx.send(embed=get_embed("{self.client.no_emoji} | 취소 되었습니다.","",0xff0000))
+                    await ctx.send(embed=get_embed(f"{self.client.no_emoji} | 취소 되었습니다.","",0xff0000))
                     return
                 
         level = self.client.pool[str(user)]["reinforce"][weapon]["level"]
         
         if level >= 100:
-            msg = await ctx.send(embed=get_embed(":star: | 스타 강화","100렙을 넘으셔서 특수강화 도전을 하실수 있습니다.\n성공 : 30%\n강화 실패 : 50%\n파괴 : 20%\n도전 하시겠습니까?"))
+            starforce = self.client.pool[str(user.id)]["reinforce"][weapon]["starforce"]
+            if self.client.pool[str(user.id)]["reinforce"][weapon]["broken"]:
+                await ctx.send(embed=get_embed(f"{self.client.no_emoji} | 이 무기는 파괴된 무기입니다.",f"무기를 복구하시겠습니까?\n복구를 위해선 {starforce - 1}의 스타 레벨을 가진 무기를 사용해야합니다!",0xff0000))
+                return
+            
+            if starforce == 0: s_status = [100, 0, 0, 0]
+            elif starforce <= 3: s_status = [30, 70, 0, 0]
+            elif starforce <= 5: s_status = [30, 60, 10, 0]
+            elif starforce <= 16: s_status = [20, 60, 19, 1]
+            elif starforce <= 19: s_status = [20, 60, 17, 3]
+            elif starforce <= 24: s_status = [15, 65, 27, 3]
+            else: 
+                await ctx.send("이미 강화가 최대치입니다!")
+                return
+            
+            msg = await ctx.send(embed=get_embed(":star: | 스타 강화",f"100렙을 넘으셔서 특수강화 도전을 하실수 있습니다.\n강화 대상 : {weapon}\n**확률**\n> 성공 : {s_status[0]}%, 강화 실패 : {s_status[1]}%, 파괴 : {s_status[2]}%, 소멸 : {s_status[3]}%\n\n도전 하시겠습니까?"))
             emjs=[self.client.yes_emoji, self.client.no_emoji]
             await msg.add_reaction(emjs[0])
             await msg.add_reaction(emjs[1])
@@ -228,24 +245,35 @@ class user(commands.Cog):
             else:
                 e = str(reaction.emoji)
                 if e == self.client.yes_emoji:
-                    rand = random.randint(0,9)
-                    starforce = self.client.pool[str(user.id)]["reinforce"][weapon]["starforce"]
-                    if rand < 3:
+                    
+                    rand = random.choices(["성공", "실패", "파괴", "소멸"], weights = s_status)
+                    
+                    if rand == "성공":
                         self.client.pool[str(user.id)]["reinforce"][weapon]["starforce"] += 1
                         await ctx.send(embed=get_embed(f"{self.client.yes_emoji} | {weapon}의 스타가 **1레벨** 성장했습니다.",f"현재 레벨 : **{starforce+1}**"))
                         return
-                    elif rand < 7:
+                    
+                    elif rand == "실패":
                         self.client.pool[str(user.id)]["reinforce"][weapon]["starforce"] -= 1
-                        await ctx.send(embed=get_embed(f"{self.client.yes_emoji} | {weapon}의 스타가 **1레벨** 하락했습니다.",f"현재 레벨 : **{starforce}**",0xff0000))
+                        await ctx.send(embed=get_embed(f"{self.client.yes_emoji} | {weapon}의 스타가 **1레벨** 하락했습니다.",f"현재 레벨 : **{starforce-1}**",0xff0000))
                         return
-                    else:
+                    
+                    elif rand == "파괴":
+                        self.client.pool[str(user.id)]["reinforce"][weapon]["starforce"] = 3
+                        self.client.pool[str(user.id)]["reinforce"][weapon]["broken"] = True
+                        await ctx.send(embed=get_embed(f"{self.client.no_emoji} | {weapon} (이)가 파괴되었습니다.","",0xff0000))
+                        return
+                    
+                    elif rand == "소멸":
                         self.client.pool[str(user.id)]["reinforce"][weapon]["starforce"] = 0
                         self.client.pool[str(user.id)]["reinforce"][weapon]["broken"] = True
                         await ctx.send(embed=get_embed(f"{self.client.no_emoji} | {weapon} (이)가 파괴되었습니다.","",0xff0000))
                         return
+                    
                 elif e == self.client.no_emoji:
                     await ctx.send(embed=get_embed("{self.client.no_emoji} | 취소 되었습니다.","",0xff0000))
                     return
+                
         else:
             msg = await ctx.send(embed=get_embed(":hammer: | 기본 강화","강화에 도전합니다!\n가격은 무료입니다!\n\n성공 : 70% (2~15 레벨 랜덤 오름)\n실패 : 30% (실패시 파괴)\n도전 하시겠습니까?"))
             emjs=[self.client.yes_emoji, self.client.no_emoji]
@@ -266,18 +294,25 @@ class user(commands.Cog):
                         n = random.randint(5,20)
                         self.client.pool[str(user.id)]["reinforce"][weapon]["level"] += n
                         await ctx.send(embed=get_embed(f"{self.client.yes_emoji} | {weapon} (이)가 **{n}레벨** 성장했습니다.",f"현재 레벨 : **{level+n}**"))
+                        if self.client.pool[str(user.id)]["reinforce"][weapon]["level"] > 100:
+                            self.client.pool[str(user.id)]["reinforce"][weapon]["level"] = 100
+                            await ctx.send(embed=get_embed(f"{self.client.yes_emoji} | {weapon}의 레벨이 100레벨을 넘어 100레벨로 자동 조정됩니다!","최대 레벨에 도달하신것을 축하드립니다! 다시 강화를 눌러 스타 강화를 진행하실 수 있습니다!\n현재 레벨 : **100**"))
                         return
+                    
                     else:
                         del self.client.pool[str(user.id)]["reinforce"][weapon]
                         await ctx.send(embed=get_embed(f"{self.client.no_emoji} | {weapon} (이)가 파괴되었습니다.","",0xff0000))
                         return
+                    
                 elif e == self.client.no_emoji:
                     await ctx.send(embed=get_embed("{self.client.no_emoji} | 취소 되었습니다.","",0xff0000))
                     return
             
     @_reinforce.command(name = "목록")
     async def level(self, ctx):
-        reinlist = [f"**Lv{v['level']}** {':star:' * v['starforce']} {k}" for k, v in self.pool[str(ctx.author.id)]["reinforce"].items()]
+        reinlist = []
+        for k, v in self.pool[str(ctx.author.id)]["reinforce"].items():
+            reinlist.append(f"**Lv{v['level']}** {':star:' * v['starforce']} {k}")
         await ctx.send(embed=get_embed(f"🛠️ | {ctx.author.name}님의 강화목록입니다. (총 {len(reinlist)}개)", "\n".join(reinlist)))
 
 def setup(client):

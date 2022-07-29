@@ -17,4 +17,4 @@ client.no_emoji = "<a:no:1001365885426073690>"
 for ext in filter(lambda x: x.endswith('.py') and not x.startswith('_'), os.listdir('./exts')):
     client.load_extension('exts.' + os.path.splitext(ext)[0])
 
-client.run("Token")
+client.run("NzUxNjYwNTc2NTg5MjE3ODkz.GR7wFK.cmFrFYFuoe26gKhjKt-TrJL6OsGQggCQXb3tSA")

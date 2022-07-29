@@ -24,5 +24,92 @@
             "color": 16054898
         },
         "inventory": {}
+    },
+    "685411330005663764": {
+        "money": 0,
+        "bank": 0,
+        "reinforce": {},
+        "blacklist": false,
+        "permission": "User",
+        "profile": {
+            "money_open": true,
+            "color": 16054898
+        },
+        "inventory": {}
+    },
+    "556693949880860702": {
+        "money": 0,
+        "bank": 0,
+        "reinforce": {
+            "웨식": {
+                "level": 104,
+                "starforce": 0,
+                "broken": true
+            },
+            "웨식2": {
+                "level": 100,
+                "starforce": 1,
+                "broken": false
+            },
+            "웨식3": {
+                "level": 110,
+                "starforce": 0,
+                "broken": false
+            },
+            "웨식4": {
+                "level": 38,
+                "starforce": 0,
+                "broken": false
+            }
+        },
+        "blacklist": false,
+        "permission": "User",
+        "profile": {
+            "money_open": true,
+            "color": 16054898
+        },
+        "inventory": {}
+    },
+    "615537025973485580": {
+        "money": 0,
+        "bank": 0,
+        "reinforce": {
+            "99강 백민규": {
+                "level": 102,
+                "starforce": 0,
+                "broken": true
+            }
+        },
+        "blacklist": false,
+        "permission": "User",
+        "profile": {
+            "money_open": true,
+            "color": 16054898
+        },
+        "inventory": {}
+    },
+    "416878526172495875": {
+        "money": 0,
+        "bank": 0,
+        "reinforce": {},
+        "blacklist": false,
+        "permission": "User",
+        "profile": {
+            "money_open": true,
+            "color": 16054898
+        },
+        "inventory": {}
+    },
+    "446904973628801024": {
+        "money": 0,
+        "bank": 0,
+        "reinforce": {},
+        "blacklist": false,
+        "permission": "User",
+        "profile": {
+            "money_open": true,
+            "color": 16054898
+        },
+        "inventory": {}
     }
 }
