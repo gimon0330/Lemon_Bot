@@ -40,14 +40,16 @@ class profile(commands.Cog):
             else: embed.add_field(name="서버 권한", value="User")
             if str(user.id) in self.pool.keys():
                 if self.pool[str(user.id)]["profile"]["money_open"]:
-                    reinlist = [k for k, v in self.pool[str(user.id)]["reinforce"].items() if v["level"] >= 100]
+                    reinlist = [[k, v["starforce"]] for k, v in self.pool[str(user.id)]["reinforce"].items() if v["level"] >= 100]
+                    str_ = [f':star:**x{i[1]}** {i[0]}' for i in reinlist]
                     embed.add_field(
                         name="Lemon System", 
                         value=f">>> **Permission**: {self.pool[str(user.id)]['permission']}\n" +
                         ("\n**블랙리스트에 등재된 유저입니다!**" if self.pool[str(user.id)]['blacklist'] else 
                         f"**Money**: {self.pool[str(user.id)]['money']}원\n" + 
                         f"**bank**: {self.pool[str(user.id)]['bank']}원\n" + 
-                        f"**100레벨 이상 강화 아이템 갯수** : {len(reinlist)}개\n{','.join(reinlist)}")
+                        f"**100레벨 이상 강화 아이템 갯수** : {len(reinlist)}개\n" + ', '.join(str_)
+                        )
                     )
                 else:
                     embed.add_field(
