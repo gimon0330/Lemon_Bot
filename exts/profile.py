@@ -97,7 +97,9 @@ class profile(commands.Cog):
                         await ctx.send(f"프로필 카드 색을 {color}로 변경하였습니다!")
                         
             elif e == "🔍":
-                await ctx.send("프로필을 비공개로 변경합니다!")
+                self.pool[str(ctx.author.id)]["profile"]["money_open"] = not self.pool[str(ctx.author.id)]["profile"]["money_open"]
+                show = "공개" if self.pool[str(ctx.author.id)]["profile"]["money_open"] else "비공개"
+                await ctx.send(f"프로필을 {show}상태로 변경합니다!")
             
 
 def setup(client):

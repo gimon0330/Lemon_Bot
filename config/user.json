@@ -1,137 +1,42 @@
 {
-    "472048060483239939": {
+    "467666650183761920": {
         "money": 0,
         "bank": 0,
         "reinforce": {
-            "다크": {
-                "level": 100,
-                "starforce": 2,
-                "broken": true
-            },
-            "뭐": {
-                "level": 100,
-                "starforce": 1,
-                "broken": true
-            },
-            "스퀴테": {
-                "level": 100,
-                "starforce": 6,
+            "ㅇ": {
+                "level": 0,
+                "starforce": 0,
                 "broken": false
             }
         },
+        "blacklist": false,
+        "permission": "Master",
+        "profile": {
+            "money_open": true,
+            "color": 16054898
+        },
+        "inventory": {}
+    },
+    "472048060483239939": {
+        "money": 16993,
+        "bank": 0,
+        "reinforce": {},
         "blacklist": true,
         "permission": "User"
     },
     "485056121741246465": {
         "money": 0,
         "bank": 0,
-        "reinforce": {
-            ".": {
-                "level": 100,
-                "starforce": 5,
-                "broken": false
-            }
-        },
+        "reinforce": {},
         "blacklist": false,
         "permission": "User"
     },
-    "615537025973485580": {
-        "money": 0,
-        "bank": 0,
-        "reinforce": {
-            "가프린세스": {
-                "level": 100,
-                "starforce": 3,
-                "broken": true
-            }
-        },
-        "blacklist": false,
-        "permission": "User",
-        "profile": {
-            "money_open": true,
-            "color": 16054898
-        },
-        "inventory": {}
-    },
-    "315467368656666635": {
+    "446904973628801024": {
         "money": 0,
         "bank": 0,
         "reinforce": {},
         "blacklist": false,
         "permission": "User",
-        "profile": {
-            "money_open": true,
-            "color": 16054898
-        },
-        "inventory": {}
-    },
-    "416878526172495875": {
-        "money": 0,
-        "bank": 0,
-        "reinforce": {
-            "ヽ(･̑ᴗ･̑)ﾉ": {
-                "level": 100,
-                "starforce": 3,
-                "broken": true
-            }
-        },
-        "blacklist": false,
-        "permission": "User",
-        "profile": {
-            "money_open": true,
-            "color": 16054898
-        },
-        "inventory": {}
-    },
-    "556693949880860702": {
-        "money": 0,
-        "bank": 0,
-        "reinforce": {
-            "웨식": {
-                "level": 100,
-                "starforce": 3,
-                "broken": false
-            },
-            "웨식3": {
-                "level": 0,
-                "starforce": 0,
-                "broken": false
-            },
-            "웨식4": {
-                "level": 0,
-                "starforce": 0,
-                "broken": false
-            },
-            "웨식5": {
-                "level": 0,
-                "starforce": 0,
-                "broken": false
-            },
-            "웨식14": {
-                "level": 0,
-                "starforce": 0,
-                "broken": false
-            },
-            "웨식2": {
-                "level": 54,
-                "starforce": 0,
-                "broken": false
-            }
-        },
-        "blacklist": false,
-        "permission": "User",
-        "profile": {
-            "money_open": true,
-            "color": 16054898
-        },
-        "inventory": {}
-    },
-    "467666650183761920": {
-        "money": 0,
-        "bank": 0,
-        "reinforce": {},
-        "blacklist": false,
-        "permission": "Master",
         "profile": {
             "money_open": true,
             "color": 16054898
