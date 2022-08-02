@@ -1,4 +1,4 @@
-import discord, traceback, sys
+import discord, traceback, sys, asyncio
 from itertools import cycle
 from discord.ext import commands, tasks
 from utils import permutil, errors
@@ -10,15 +10,20 @@ class events(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.bg_change_playing.start()
-        self.gamecycle = cycle([])
+        self.gamecycle = cycle([f"ReBoot...? V2.8.3", f"{len(self.client.guilds)} Servers│{len(self.client.pool.keys())} Users", f"ㄹ!도움으로 명령어 알아보기"])
 
     @tasks.loop(seconds=10)
     async def bg_change_playing(self):
-        await self.client.change_presence(activity=discord.Game(f"LemonBot V2.1.0 // {len(self.client.guilds)} Servers│{len(self.client.pool.keys())} Users"))
+        try:
+            await self.client.change_presence(activity=discord.Game(next(self.gamecycle)))
+            self.gamecycle = cycle([f"ReBoot...? V2.8.3", f"{len(self.client.guilds)} Servers│{len(self.client.pool.keys())} Users", f"ㄹ!도움으로 명령어 알아보기"])
+        except:
+            traceback.print_exc()
+        
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("==================\nLemonBOT ONLINE\n==================")
+        print(f"==================\n{self.client.user} ONLINE\n==================")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: Exception):
@@ -137,7 +142,7 @@ class events(commands.Cog):
                 await ctx.send(embed=embed)
                 return
 
-        await ctx.send(embed=get_embed('**Unknown ERROR**!',f'Id : {ctx.author.id}\nContent : {ctx.message.content}```python\n{traceback.format_exception(type(error), error, error.__traceback__)}```',0xFF0000))
+        await ctx.send(embed=get_embed('**Unknown ERROR**!',f'Id : {ctx.author.id}\nContent : {ctx.message.content}```python\n{"".join(traceback.format_exception(type(error), error, error.__traceback__))}```',0xFF0000))
 
 def setup(client):
     client.add_cog(events(client))

@@ -18,7 +18,7 @@
         "inventory": {}
     },
     "472048060483239939": {
-        "money": 16993,
+        "money": 0,
         "bank": 0,
         "reinforce": {},
         "blacklist": true,
@@ -31,7 +31,7 @@
         "blacklist": false,
         "permission": "User"
     },
-    "446904973628801024": {
+    "473371560703557653": {
         "money": 0,
         "bank": 0,
         "reinforce": {},
