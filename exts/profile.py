@@ -19,6 +19,7 @@ class profile(commands.Cog):
             await ctx.send(embed=get_embed("<a:no:698461934613168199> | 서버내에서만 사용가능한 명령어 입니다.",0xff0000))
             return
         if not user: user = ctx.author
+        
         try:
             st = str(user.status)
             if st == "online": sta = ":green_circle: 온라인"
@@ -26,13 +27,17 @@ class profile(commands.Cog):
             elif st == "idle": sta = ":yellow_circle: 자리 비움"
             else: sta = ":no_entry: 방해 금지"
         except: sta = "불러오는데 실패"
-        embcolor = self.pool[str(user.id)]["profile"]["color"]
+        
+        if str(user.id) in self.pool: embcolor = int(self.pool[str(user.id)]["profile"]["color"], 16)
+        else: embcolor = 0xf4fa72
         embed = discord.Embed(title=f"👤 | **{user.name} 님의 프로필**", description=("" if user.name == user.display_name else f"**서버내 닉네임**: {user.display_name}\n") + f'**유저 ID**: {user.id}\n**현재 상태**: {sta}',color=embcolor)
         embed.set_thumbnail(url=user.avatar_url)
+        
         date = datetime.datetime.utcfromtimestamp(((int(user.id) >> 22) + 1420070400000)/1000)
         embed.add_field(name="Discord 가입 일시", value=str(date.year) + "년 " + str(date.month) + "월 " + str(date.day) + "일 ")
         joat = user.joined_at.isoformat()
         embed.add_field(name="서버 가입 일시", value=joat[0:4]+'년 '+joat[5:7]+'월 '+joat[8:10]+'일')
+        
         if user.bot:
             embed.add_field(name="봇 초대장 생성",value=f"[초대장](https://discord.com/oauth2/authorize?client_id={user.id}&scope=bot&permissions=0)")
         else:
@@ -60,10 +65,11 @@ class profile(commands.Cog):
         
     @_profile.command(name = "설정")
     async def _profile_setup(self, ctx):
-        color = hex(self.pool[str(ctx.author.id)]["profile"]["color"])
+        color = hex(int(self.pool[str(ctx.author.id)]["profile"]["color"], 16))
         show = "공개" if self.pool[str(ctx.author.id)]["profile"]["money_open"] else "비공개"
-        msg = await ctx.send(embed=get_embed("⚙️ | 프로필 설정",f"✏️ : 프로필 색 변경 (현재 색 {color})\n🔍 : 프로필 비공개 설정 (현재 {show})"))
-        emjs=["✏️", "🔍"]
+        des = f"✏️ : 프로필 색 변경 (현재 색 {color})\n🔍 : 프로필 비공개 설정 (현재 {show})\n❌ : 취소"
+        msg = await ctx.send(embed=get_embed("⚙️ | 프로필 설정", des))
+        emjs=["✏️", "🔍", "❌"]
         for i in emjs:
             await msg.add_reaction(i)
         def check(reaction, user):
@@ -92,14 +98,25 @@ class profile(commands.Cog):
                     return
                 else: 
                     n = msg.content
-                    if n == str(hex(n)):
-                        color = self.pool[user.id]["profile"]["color"]
-                        await ctx.send(f"프로필 카드 색을 {color}로 변경하였습니다!")
+                    await ctx.send(n)
+                    try: scan = str(hex(int(n, 16)))
+                    except: await ctx.send("올바르지 않은 입력 양식입니다!")
+                    else:
+                        if (n is not scan) or not (0 < int(n,16) < 376926741):
+                            self.pool[str(user.id)]["profile"]["color"] = n
+                            color = self.pool[str(user.id)]["profile"]["color"]
+                            await ctx.send(f"프로필 카드 색을 {color}로 변경하였습니다!")
+                            return
+                        
+                    await ctx.send("올바르지 않은 입력 양식입니다!")
                         
             elif e == "🔍":
-                self.pool[str(ctx.author.id)]["profile"]["money_open"] = not self.pool[str(ctx.author.id)]["profile"]["money_open"]
+                self.pool[str(ctx.author.id)]["profile"]["money_open"] = ~self.pool[str(ctx.author.id)]["profile"]["money_open"]
                 show = "공개" if self.pool[str(ctx.author.id)]["profile"]["money_open"] else "비공개"
                 await ctx.send(f"프로필을 {show}상태로 변경합니다!")
+                
+            elif e == "❌":
+                await ctx.send("취소되었습니다.")
             
 
 def setup(client):

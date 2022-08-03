@@ -1,22 +1,4 @@
 {
-    "467666650183761920": {
-        "money": 0,
-        "bank": 0,
-        "reinforce": {
-            "ㅇ": {
-                "level": 0,
-                "starforce": 0,
-                "broken": false
-            }
-        },
-        "blacklist": false,
-        "permission": "Master",
-        "profile": {
-            "money_open": true,
-            "color": 16054898
-        },
-        "inventory": {}
-    },
     "472048060483239939": {
         "money": 0,
         "bank": 0,
@@ -31,12 +13,12 @@
         "blacklist": false,
         "permission": "User"
     },
-    "473371560703557653": {
+    "467666650183761920": {
         "money": 0,
         "bank": 0,
         "reinforce": {},
         "blacklist": false,
-        "permission": "User",
+        "permission": "Master",
         "profile": {
             "money_open": true,
             "color": 16054898

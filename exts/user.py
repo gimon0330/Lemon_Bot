@@ -139,6 +139,7 @@ class user(commands.Cog):
                 return
     
     @commands.group(name = "도박", invoke_without_command=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def lottery(self, ctx, n):
         try: n = int(n)
         except:
@@ -157,6 +158,7 @@ class user(commands.Cog):
         await ctx.send(f"{a}배!\n남은 돈은 {self.pool[str(ctx.author.id)]['money']}원 입니다!")
             
     @lottery.command(name = "올인")
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def all_in(self, ctx):
         a = random.randint(-6,10)
         if a <= 0:

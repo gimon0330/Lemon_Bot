@@ -195,6 +195,9 @@ class reinforce(commands.Cog):
                 elif e == self.client.no_emoji:
                     await ctx.send(embed=get_embed("{self.client.no_emoji} | 취소 되었습니다.","",0xff0000), reference = ctx.message)
                     return
+                
+        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+            db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
             
     @_reinforce.command(name = "목록")
     async def level(self, ctx, user: typing.Optional[discord.Member] = None):
@@ -212,6 +215,7 @@ class reinforce(commands.Cog):
         await ctx.send(embed=get_embed(f"🛠️ | {user.name}님의 강화목록입니다. (총 {len(reinlist)}개)", "\n".join(reinlist)))
         
     @_reinforce.command(name = "삭제")
+    @commands.cooldown(1, 100, commands.BucketType.user)
     async def _delete(self, ctx, *, weapon):
         if weapon not in self.client.pool[str(ctx.author.id)]["reinforce"].keys():
             await ctx.send(embed=get_embed("{self.client.no_emoji} | 존재하지 않는 무기입니다.","",0xff0000), reference = ctx.message)
@@ -236,7 +240,11 @@ class reinforce(commands.Cog):
             elif e == self.client.no_emoji:
                 await ctx.send(embed = get_embed(self.client.no_emoji + " | 취소했습니다."), reference = ctx.message)
                 
+        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+            db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
+                
     @_reinforce.command(name = "이름변경")
+    @commands.cooldown(1, 100, commands.BucketType.user)
     async def _rename(self, ctx, *, weapon):
         if weapon not in self.client.pool[str(ctx.author.id)]["reinforce"].keys():
             await ctx.send(embed=get_embed("{self.client.no_emoji} | 존재하지 않는 무기입니다.","",0xff0000), reference = ctx.message)
@@ -264,6 +272,9 @@ class reinforce(commands.Cog):
             self.client.pool[str(ctx.author.id)]["reinforce"][name] = self.client.pool[str(ctx.author.id)]["reinforce"][weapon]
             del self.client.pool[str(ctx.author.id)]["reinforce"][weapon]
             await ctx.send(embed = get_embed("이름 변경을 완료 했습니다!",f"{weapon} ==> {name}"), reference = ctx.message)
+
+        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+            db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
             
     @_reinforce.command(name = "순위")
     async def _rank(self, ctx, n: typing.Optional[int] = 1):

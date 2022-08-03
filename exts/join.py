@@ -22,7 +22,7 @@ class join(commands.Cog):
             "permission": "User",
             "profile": {
                 "money_open": True,
-                "color": 0xf4fa72
+                "color": str(hex(0xf4fa72))
             },
             "inventory": {}
         }
