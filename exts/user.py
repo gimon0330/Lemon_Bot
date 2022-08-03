@@ -19,7 +19,7 @@ class user(commands.Cog):
     @commands.command(name = "탈퇴")
     async def user_exit(self, ctx):
         del self.client.pool[str(ctx.author.id)]
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
         await ctx.send("성공적으로 탈퇴되었습니다")
         
@@ -58,7 +58,7 @@ class user(commands.Cog):
             return
         self.client.pool[str(ctx.author.id)]["bank"] += n
         self.client.pool[str(ctx.author.id)]["money"] -= n
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
         await ctx.send("성공적으로 저금되었습니다")
         
@@ -66,7 +66,7 @@ class user(commands.Cog):
     async def user_bank_in_all(self, ctx):
         self.client.pool[str(ctx.author.id)]["bank"] += self.client.pool[str(ctx.author.id)]["money"]
         self.client.pool[str(ctx.author.id)]["money"] = 0
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
         await ctx.send("성공적으로 저금되었습니다")
     
@@ -80,7 +80,7 @@ class user(commands.Cog):
             return
         self.client.pool[str(ctx.author.id)]["bank"] += n
         self.client.pool[str(ctx.author.id)]["money"] -= n
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
         await ctx.send("성공적으로 출금되었습니다.")
         
@@ -88,7 +88,7 @@ class user(commands.Cog):
     async def user_bank_out_all(self, ctx):
         self.client.pool[str(ctx.author.id)]["money"] += self.client.pool[str(ctx.author.id)]["bank"]
         self.client.pool[str(ctx.author.id)]["bank"] = 0
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
         await ctx.send("성공적으로 출금되었습니다")
 
@@ -100,7 +100,7 @@ class user(commands.Cog):
             await ctx.send("여기 빚쟁이가 돈 뺏어가요 엉엉")
         else:
             self.client.pool[str(ctx.author.id)]["money"] += 10000
-            with open("./config/user.json", "w", encoding='utf-8') as db_json:
+            with open("./data/user.json", "w", encoding='utf-8') as db_json:
                 db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
             await ctx.send("10000원 입금 완료")
             
@@ -153,7 +153,7 @@ class user(commands.Cog):
             return
         a = random.randint(-8, 8)
         self.pool[str(ctx.author.id)]["money"] = self.client.pool[str(ctx.author.id)]["money"] + a * n
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
         await ctx.send(f"{a}배!\n남은 돈은 {self.pool[str(ctx.author.id)]['money']}원 입니다!")
             
@@ -167,7 +167,7 @@ class user(commands.Cog):
         else: 
             await ctx.send(str(a)+"배!")
         self.client.pool[str(ctx.author.id)]["money"] = self.client.pool[str(ctx.author.id)]["money"] * a
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
             
     @commands.command(name = "환전")

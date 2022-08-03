@@ -107,18 +107,18 @@ class reinforce(commands.Cog):
                         await ctx.send(embed=get_embed(f"{self.client.no_emoji} | 취소 되었습니다.","",0xff0000), reference = ctx.message)
                         return
                         
-            
-            if starforce == 0: s_status = [100, 0, 0, 0]
-            elif starforce <= 3: s_status = [90, 10, 0, 0]
-            elif starforce <= 5: s_status = [70, 25, 5, 0]
-            elif starforce <= 16: s_status = [50, 40, 9, 1]
-            elif starforce <= 19: s_status = [40, 40, 17, 3]
-            elif starforce <= 24: s_status = [35, 35, 27, 3]
-            else: 
+            with open("./config/probability.json", "r", encoding='UTF8') as db_json:  
+                prob = json.load(db_json)
+                
+            if starforce >= 25:
                 await ctx.send("이미 강화가 최대치입니다!")
                 return
+            s_status = prob["starforce"][str(starforce)]    
             
-            msg = await ctx.send(embed=get_embed(":star: | 스타 강화",f"100렙을 넘으셔서 특수강화 도전을 하실수 있습니다.\n강화 대상 : {weapon}\n**확률**\n> 성공 : {s_status[0]}%, 강화 실패 : {s_status[1]}%\n파괴 (스타레벨 -2) : {s_status[2]}%, 소멸 : {s_status[3]}%\n\n도전 하시겠습니까?"), reference = ctx.message)
+            des = f"100렙을 넘으셔서 특수강화 도전을 하실수 있습니다.\n강화 대상 : :star:**x{starforce}** {weapon}\n\n🎯** | 확률**\n> 성공 : {s_status[0]}%, 강화 실패 : {s_status[1]}%"
+            des += f"\n> 파괴 (스타레벨 -2) : {s_status[2]}%, 소멸 : {s_status[3]}%" if not ((s_status[2] == 0) and (s_status[3] == 0)) else ""
+            des += "\n\n도전 하시겠습니까?"
+            msg = await ctx.send(embed=get_embed(":star: | 스타 강화", des), reference = ctx.message)
             emjs=[self.client.yes_emoji, self.client.no_emoji]
             await msg.add_reaction(emjs[0])
             await msg.add_reaction(emjs[1])
@@ -159,7 +159,7 @@ class reinforce(commands.Cog):
                     else: await ctx.send("?")
                     
                 elif e == self.client.no_emoji:
-                    await ctx.send(embed=get_embed("{self.client.no_emoji} | 취소 되었습니다.","",0xff0000), reference = ctx.message)
+                    await ctx.send(embed=get_embed(f"{self.client.no_emoji} | 취소 되었습니다.","",0xff0000), reference = ctx.message)
                     return
                 
         else:
@@ -196,7 +196,7 @@ class reinforce(commands.Cog):
                     await ctx.send(embed=get_embed("{self.client.no_emoji} | 취소 되었습니다.","",0xff0000), reference = ctx.message)
                     return
                 
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
             
     @_reinforce.command(name = "목록")
@@ -240,7 +240,7 @@ class reinforce(commands.Cog):
             elif e == self.client.no_emoji:
                 await ctx.send(embed = get_embed(self.client.no_emoji + " | 취소했습니다."), reference = ctx.message)
                 
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
                 
     @_reinforce.command(name = "이름변경")
@@ -273,7 +273,7 @@ class reinforce(commands.Cog):
             del self.client.pool[str(ctx.author.id)]["reinforce"][weapon]
             await ctx.send(embed = get_embed("이름 변경을 완료 했습니다!",f"{weapon} ==> {name}"), reference = ctx.message)
 
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
             
     @_reinforce.command(name = "순위")

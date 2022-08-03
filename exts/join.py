@@ -30,7 +30,7 @@ class join(commands.Cog):
         if ctx.author.id == 467666650183761920:
             self.client.pool[str(ctx.author.id)]["permission"] = "Master"
         
-        with open("./config/user.json", "w", encoding='utf-8') as db_json:
+        with open("./data/user.json", "w", encoding='utf-8') as db_json:
             db_json.write(json.dumps(self.client.pool, ensure_ascii=False, indent=4))
         await ctx.send("성공적으로 가입 되었습니다")
     
