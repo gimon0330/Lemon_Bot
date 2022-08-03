@@ -41,7 +41,8 @@ class admin(commands.Cog):
     async def reinforce_set(self, ctx, uid: str, name: str, level: int, star: int):
         self.client.pool[uid]["reinforce"][name] = {
             "level": level, 
-            "starforce": star
+            "starforce": star,
+            "broken": False
         }
         await ctx.send(f"{uid}님의 {name} Level을 {level}, {star}로 설정하였습니다")
         

@@ -16,12 +16,68 @@
     "467666650183761920": {
         "money": 0,
         "bank": 0,
-        "reinforce": {},
+        "reinforce": {
+            "ㅇ": {
+                "level": 100,
+                "starforce": 1,
+                "broken": false
+            }
+        },
         "blacklist": false,
         "permission": "Master",
         "profile": {
             "money_open": true,
-            "color": 16054898
+            "color": "0xccffff"
+        },
+        "inventory": {}
+    },
+    "685411330005663764": {
+        "money": 0,
+        "bank": 0,
+        "reinforce": {
+            "레몬봇": {
+                "level": 100,
+                "starforce": 1,
+                "broken": true
+            },
+            "이시우": {
+                "level": 100,
+                "starforce": 2,
+                "broken": true
+            },
+            "뭐.": {
+                "level": 100,
+                "starforce": 0,
+                "broken": false
+            },
+            "다크봇": {
+                "level": 100,
+                "starforce": 0,
+                "broken": false
+            },
+            "민구": {
+                "level": 100,
+                "starforce": 0,
+                "broken": false
+            }
+        },
+        "blacklist": false,
+        "permission": "User",
+        "profile": {
+            "money_open": true,
+            "color": "0xf4fa72"
+        },
+        "inventory": {}
+    },
+    "416878526172495875": {
+        "money": 0,
+        "bank": 0,
+        "reinforce": {},
+        "blacklist": false,
+        "permission": "User",
+        "profile": {
+            "money_open": true,
+            "color": "0xf4fa72"
         },
         "inventory": {}
     }

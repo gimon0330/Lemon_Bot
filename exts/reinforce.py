@@ -109,16 +109,16 @@ class reinforce(commands.Cog):
                         
             
             if starforce == 0: s_status = [100, 0, 0, 0]
-            elif starforce <= 3: s_status = [70, 30, 0, 0]
-            elif starforce <= 5: s_status = [50, 40, 10, 0]
-            elif starforce <= 16: s_status = [30, 50, 19, 1]
-            elif starforce <= 19: s_status = [20, 60, 17, 3]
-            elif starforce <= 24: s_status = [15, 65, 27, 3]
+            elif starforce <= 3: s_status = [90, 10, 0, 0]
+            elif starforce <= 5: s_status = [70, 25, 5, 0]
+            elif starforce <= 16: s_status = [50, 40, 9, 1]
+            elif starforce <= 19: s_status = [40, 40, 17, 3]
+            elif starforce <= 24: s_status = [35, 35, 27, 3]
             else: 
                 await ctx.send("이미 강화가 최대치입니다!")
                 return
             
-            msg = await ctx.send(embed=get_embed(":star: | 스타 강화",f"100렙을 넘으셔서 특수강화 도전을 하실수 있습니다.\n강화 대상 : {weapon}\n**확률**\n> 성공 : {s_status[0]}%, 강화 실패 : {s_status[1]}%, 파괴 : {s_status[2]}%, 소멸 : {s_status[3]}%\n\n도전 하시겠습니까?"), reference = ctx.message)
+            msg = await ctx.send(embed=get_embed(":star: | 스타 강화",f"100렙을 넘으셔서 특수강화 도전을 하실수 있습니다.\n강화 대상 : {weapon}\n**확률**\n> 성공 : {s_status[0]}%, 강화 실패 : {s_status[1]}%\n파괴 (스타레벨 -2) : {s_status[2]}%, 소멸 : {s_status[3]}%\n\n도전 하시겠습니까?"), reference = ctx.message)
             emjs=[self.client.yes_emoji, self.client.no_emoji]
             await msg.add_reaction(emjs[0])
             await msg.add_reaction(emjs[1])
@@ -177,7 +177,7 @@ class reinforce(commands.Cog):
             else:
                 e = str(reaction.emoji)
                 if e == self.client.yes_emoji:
-                    rand = random.choices([True, False], weights = [70, 30])
+                    rand = random.randint(1, 10) < 8
                     if rand:
                         n = random.randint(5,16)
                         self.client.pool[str(user.id)]["reinforce"][weapon]["level"] += n
@@ -283,7 +283,7 @@ class reinforce(commands.Cog):
             for weapon, lev in v["reinforce"].items():
                 try: name = self.client.get_user(int(k)).name
                 except: name = k
-                lis.append([name, weapon, lev["level"], lev["starforce"], lev["starforce"] + lev["level"]])
+                lis.append([name, weapon, lev["level"], lev["starforce"], lev["starforce"] + lev["level"], lev["broken"]])
         lis = sorted(lis, key = lambda x: x[4], reverse = True)
         
         alis = []
@@ -296,11 +296,15 @@ class reinforce(commands.Cog):
             elif a < 10: m = medal[3]
             else: m =""
             
-            alis.append(f"{m} | **{r[0]}**\n> **Lv{r[2]}** {r[1]}\n\n")
+            if r[2] == 100:
+                broken = "**(파괴됨)**" if r[5] else ""
+                alis.append(f"{m} | **{r[0]}**\n> {broken} :star:**x{r[3]}** {r[1]}\n")
+            else:
+                alis.append(f"{m} | **{r[0]}**\n> **Lv{r[2]}** {r[1]}\n")
             a += 1
             if a >= 10: break
             
-        await ctx.send(embed=get_embed(":bar_chart: | 전체 강화 순위","".join(alis)))
+        await ctx.send(embed=get_embed(":bar_chart: | 전체 강화 순위","\n".join(alis)))
         
         
 def setup(client):
